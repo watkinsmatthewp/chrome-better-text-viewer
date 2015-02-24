@@ -1,0 +1,40 @@
+<html>
+	<head>
+		<link id="style" type="text/css" rel="stylesheet" href="css/settings.css">
+		<script type="application/javascript" src="libs/jquery-1.6.3.min.js"></script>
+		<script type="application/javascript" src="Settings.js"></script>
+	</head>
+	<body>
+		<h3>Better Text Viewer Options</h3>
+		<div id="content" style="padding: 1em;">
+			<div id="status">
+				Your settings have been saved successfully
+			</div>
+			<table style="width: 100%;">
+				<tr>
+					<td style="padding-bottom: 1em;">Line-wrapping</td>
+					<td style="text-align: right;">
+						<input type="checkbox" id="inputDoLineWrap" name="inputDoLineWrap">
+					</td>
+				</tr>
+				<tr>
+					<td style="padding-bottom: 1em;">Font family</td>
+					<td style="text-align: right;">
+						<input type="text" id="inputFontFamily"></input>
+					</td>
+				</tr>
+				<tr>
+					<td style="padding-bottom: 1em;">Font size</td>
+					<td style="text-align: right;">
+						<input type="text" id="inputFontSize"></input>
+					</td>
+				</tr>
+			</table>
+			<div style="height: 2em;"></div>
+			<div style="float:right;">
+				<button id="reset">Reset</button>
+				<button id="save">Save</button>
+			</div>
+		</div>
+	</body>
+</html>
