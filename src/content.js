@@ -17,6 +17,11 @@ function run() {
             var firstNode = bodyNodes[0];
             if (bodyNodes.length == 1) {
                 if (firstNode.nodeName == '#text') {
+					var head = $('head');
+					if (head != null && head.children().length > 0) {
+						// Yes, the body only has text but the head has content, so it's probably not safe to hijack it
+						return;
+					}
                     applyEditor(bodyElement, codeMode, bodyElement.html());
                 } else if (firstNode.nodeName == 'PRE') {
 					applyEditor(bodyElement, codeMode, firstNode.innerText);
