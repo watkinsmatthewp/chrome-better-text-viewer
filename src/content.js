@@ -27,7 +27,8 @@ function run() {
 					applyEditor(bodyElement, codeMode, firstNode.innerText);
                 }
             } else if (firstNode.nodeName == '#text' && codeMode != 'plain-text') {
-                applyEditor(bodyElement, codeMode, bodyElement.html());
+                // This might be worth codifying or not. Not sure. For now, don't codify it
+				// applyEditor(bodyElement, codeMode, bodyElement.html());
             }
         }
     }
