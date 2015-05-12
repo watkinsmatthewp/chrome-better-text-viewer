@@ -1,39 +1,70 @@
-// Run on page load
-chrome.runtime.sendMessage({
-    localstorage : "sync"
-}, run);
-// chrome.webRequest.onHeadersReceived.addListener(function() {alert('Headers received');});
+'use strict';
 
-function run() {
-    var ext = getExtensionFromUrl(window.location.href);
-    var codeMode = getModeForExtension(ext);
-    console.log('Ext is ' + ext + ' and code mode is ' + codeMode);
+/*
+ * Tell background.js to start listening for headers
+ */
+ chrome.extension.sendRequest({
+    msg: 'startListening'
+});
 
+/*
+ * Message listener
+ */
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+    var contentType = null;
+	if (request.msg === 'headersReceived' && request.headers != null && request.headers.responseHeaders.length > 0) {
+		for (var i = 0; i < request.headers.responseHeaders.length; i++) {
+			var header = request.headers.responseHeaders[i];
+			if (header.name == 'Content-Type') {
+				contentType = header.value.substring(0, header.value.indexOf(';'));
+			}
+		}
+    }
+    sendResponse({});
+    
     var bodyElement = $('body');
-    if (bodyElement != null) {
-        var bodyNodes = bodyElement.contents();
-        if (bodyNodes.length > 0) {
-            var contentsToChangeToCode = null;
-            var firstNode = bodyNodes[0];
-            if (bodyNodes.length == 1) {
-                if (firstNode.nodeName == '#text') {
-					var head = $('head');
-					if (head != null && head.children().length > 0) {
-						// Yes, the body only has text but the head has content, so it's probably not safe to hijack it
-						return;
-					}
-                    applyEditor(bodyElement, codeMode, bodyElement.html());
-                } else if (firstNode.nodeName == 'PRE') {
-					applyEditor(bodyElement, codeMode, firstNode.innerText);
-                }
-            } else if (firstNode.nodeName == '#text' && codeMode != 'plain-text') {
-                // This might be worth codifying or not. Not sure. For now, don't codify it
-				// applyEditor(bodyElement, codeMode, bodyElement.html());
-            }
+    var prettyPrintableElement = getPrettyPrintableElement(bodyElement);
+    
+    if (prettyPrintableElement != null) {
+        var extension = getExtensionFromUrl(document.location.href);
+        if (extension != null) {
+            if (/.+\/json/i.test(contentType)) {
+        		 // Override to JSON
+        		 extension = 'json';
+        	 } else if (/.+\/xml/i.test(contentType)) {
+        		 // Override to XML
+        		 extension = 'xml';
+        	 }
         }
+        var editorMode =  getModeForExtension(extension);
+        // console.log('Pretty printing the ' + prettyPrintableElement.nodeName + ' element with extension ' + extension + ' (mode ' + editorMode + ')');
+        applyEditor(bodyElement == null ? document : bodyElement, editorMode, prettyPrintableElement.innerText);
+    }
+});
+
+/*
+ * Finds the element to pretty print (if any)
+ */
+function getPrettyPrintableElement(bodyElement) {
+	if (bodyElement == null) {
+		return document;
+	} else {
+        var children = bodyElement.contents();
+        if (children.length == 0) {
+            return bodyElement;
+        } else if (children[0].nodeName == 'PRE') {
+            return children[0];
+        } else if (children[0].nodeName == '#text' && children[0].nodeValue.trim().length > 0) {
+            return bodyElement;
+        }
+        
+        return null;
     }
 }
 
+/*
+ * Extracts the file extension from the URL
+ */ 
 function getExtensionFromUrl(url) {
     var ext = null;
     if (url != null && url.length > 0) {
@@ -49,6 +80,9 @@ function getExtensionFromUrl(url) {
     return ext;
 }
 
+/*
+ * Converts the extension to the proper editor language mode
+ */ 
 function getModeForExtension(ext) {
     var mode = 'plain-text';
     if (ext != null) {
@@ -71,8 +105,8 @@ function getModeForExtension(ext) {
             mode = 'clike';
             break;
         case 'sql':
-            mode = 'sql'
-                break;
+            mode = 'sql';
+            break;
         case 'js':
         case 'json':
             mode = 'javascript';
@@ -88,18 +122,21 @@ function getModeForExtension(ext) {
     return mode;
 }
 
-function applyEditor(bodyElement, codeMode, content) {
+/*
+ * Applies the editor to the specified element
+ */ 
+function applyEditor(containerElement, codeMode, content) {
     chrome.extension.sendRequest({
-        method : "getSettings"
+        msg : "getSettings"
     }, function (settings) {
         // var editor = CodeMirror(document.body, {value: content});
         var editor = CodeMirror(function (codeEditorElement) {
-                bodyElement.html(codeEditorElement)
+                containerElement.html(codeEditorElement)
             }, {
                 value : content,
+                readOnly: true,
                 lineNumbers : true,
                 fullScreen : true,
-                mode : 'plain-text',
                 lineWrapping : settings.doLineWrap,
                 mode : codeMode,
                 useCPP : (codeMode == "clike")
@@ -108,8 +145,10 @@ function applyEditor(bodyElement, codeMode, content) {
     });
 }
 
+/*
+ * Styles the editor according to the user settings
+ */ 
 function applyStyleFromSettings(settings) {
-    // Settings overrides
     if (settings.fontFamily != 'monospace' || settings.fontSize > 0) {
         if (settings.fontFamily != 'monospace' && settings.fontSize > 0) {
             // override both properties
