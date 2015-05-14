@@ -158,4 +158,94 @@ function applyStyleFromSettings(settings) {
             }
         }
     }
+    
+    // Add a rating div to the top-right corner
+    addRatingFloater(settings);
+}
+
+function addRatingFloater(settings) {
+    var now = new Date();
+    if (now < settings.nextRatingPromptDate) {
+        // Build the ratings box
+        $('<div id="ratingsBox">'
+            + '<h4 id="ratingsBoxHeader">Do you l<span id="heart">♥</span>ve Better Text Viewer?</h4>'
+            + '<hr id="ratingsBoxHr"/>'
+            + '<p id="ratingsBoxMessage">If you think this extension is awesome, show your love by heading over to the Chrome webstore and rating it!</p>'
+            + '<table id="ratingsBoxButtonTable">'
+                + '<tr>'
+                    + '<td id="ratingsBoxButtonLeftCell">'
+                        + '<input id="btnRateNever" type="button" value="Never"></input>'
+                    + '</td>'
+                    + '<td id="ratingsBoxButtonRightCell">'
+                        + '<input id="btnRateLater" type="button" value="Maybe Later"></input> '
+                        + '<input id="btnRateNow" type="button" value="Sure!"></input>'
+                    + '</td>'
+                + '</tr>'
+            + '</table>'
+        + '</div>').appendTo($('body') || $(document));
+        
+        // Style the rest of the elements
+        $('#ratingsBoxHeader').css({
+            'font-family': 'Arial',
+            'margin': '.5em 0 1em 0'
+        });
+        $('#heart').css({
+            'color': 'red',
+            'font-weight': 'bold'
+        });
+        $('#ratingsBoxMessage').css({
+            'font-family': 'Arial'
+        });
+        $('#ratingsBoxButtonTable').css({
+            'width': '100%',
+            'border': 'none'
+        });
+        $('#ratingsBoxButtonRightCell').css({
+            'text-align': 'right' 
+        });
+        
+        // Attach events to the buttons
+        $('#btnRateNever').click(function() {
+            chrome.extension.sendRequest({
+                msg : "setNextRatingPromptDate",
+                days: -1
+            }, function () {
+                alert('Aw, you cut me to the quick!');
+                $('#ratingsBox').hide();
+            });
+        });
+        $('#btnRateLater').click(function() {
+            chrome.extension.sendRequest({
+                msg : "setNextRatingPromptDate",
+                days: 7
+            }, function () {
+                $('#ratingsBox').hide();
+            });
+        });
+         $('#btnRateNow').click(function() {
+            chrome.extension.sendRequest({
+                msg : "setNextRatingPromptDate",
+                days: -1
+            }, function () {
+                window.open('https://chrome.google.com/webstore/detail/better-text-viewer/lcaidopdffhfemoefoaadecppnjdknkc/reviews', '_blank');
+                $('#ratingsBox').hide();
+            });
+        });
+        
+        // Style the ratings box (bringing it forward)
+        $('#ratingsBox').css({
+            'z-index': 8999,
+            'position': 'absolute',
+            'right': '40px',
+            'top': '20px',
+            'width': '360px',
+            'padding': '.5em 1em .5em 1em',
+            'border': '1px solid gray',
+            'background-color': 'white',
+            'border-radius': '4px'
+         });
+        
+        // Show the box
+        $('#ratingsBox').show();
+    }
 }

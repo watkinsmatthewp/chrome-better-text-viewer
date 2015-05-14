@@ -31,7 +31,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		});
     } else if (request.msg === 'getSettings' ) {
         response = getSettings();
+    } else if (request.msg === 'setNextRatingPromptDate') {
+        setNextRatingPromptDate(request.days);
     }
+    
     sendResponse(response);
 });
 
@@ -61,6 +64,25 @@ function getSettings() {
     }
 
     return settings;
+}
+
+function setNextRatingPromptDate(daysInTheFuture) {
+  var settings = getSettings();
+  if (daysInTheFuture < 0) {
+    // Set to an impossibly future date
+    settings.nextRatingPromptDate = new Date(3000, 1, 1);
+  }
+  else {
+    var date = new Date();
+    date = addDays(date, daysInTheFuture);
+    settings.nextRatingPromptDate = date;
+  }
+  setSettings(settings);
+}
+
+function addDays(dateObject, numDays) {
+  dateObject.setDate(dateObject.getDate() + numDays);
+  return dateObject;
 }
 
 /*
