@@ -1,57 +1,46 @@
 $(window).load(function () {
-    updatePageFromSettings();
-    $('#save').click(updateSettingsFromPage);
-    $('#reset').click(resetSettings);
+    // Page load. get and show settings
+    showSettings(getOrCreateSettings());
+    
+    // Attach an event to the reset button
+    $('#reset').click(function() {
+        showSettings(saveSettings(defaultSettings()));
+    });
+    
+    // Attach an event to the save button
+    $('#save').click(function() {
+        var newSettings = {
+            doLineWrap: $('#inputDoLineWrap').prop('checked'),
+            fontFamily: $('#inputFontFamily').val(),
+            fontSize: $('#inputFontSize').val(),
+            debugMode: $('#inputDebugMode').prop('checked')
+        };
+    
+        var validation = validateAndAutoCorrectSettings(newSettings);
+        if (validation.isValid) {
+            showSettings(saveSettings(validation.settings));
+            alert('Settings saved');
+        }
+    });
 });
 
-function resetSettings() {
-    var settings = getDefaultSettings();
-    setSettings(settings);
-    updatePageFromSettings();
-}
-
 // Restores select box state to saved value from localStorage.
-function updatePageFromSettings() {
-    var settings = getSettings();
-    $('#inputDoLineWrap').attr('checked', settings.doLineWrap);
+function showSettings(settings) {
+    $('#inputDoLineWrap').prop('checked', settings.doLineWrap);
     $('#inputFontFamily').val(settings.fontFamily);
     $('#inputFontSize').val(settings.fontSize);
-    $('#inputDebugMode').attr('checked', settings.debugMode);
+    $('#inputDebugMode').prop('checked', settings.debugMode);
     $('#settingsJson').html(JSON.stringify(settings, null, 2));
     
-    if (settings.adminMode) {
-        $('.adminSetting').show();
+    if (settings.debugMode) {
+        $('.debugSetting').show();
+    } else {
+        $('.debugSetting').hide();
     }
 }
 
-// Saves options to localStorage.
-function updateSettingsFromPage() {
-    var settings = {
-        doLineWrap: $('#inputDoLineWrap').attr('checked'),
-        fontFamily: $('#inputFontFamily').val(),
-        fontSize: $('#inputFontSize').val(),
-        debugMode: $('#inputDebugMode').attr('checked')
-    };
-
-    var validation = validateSettings(settings);
-    if (validation.isValid) {
-        setSettings(settings);
-
-        var statusElement = $('#status');
-        statusElement.animate({
-            opacity : "1.0"
-        }, 500);
-        setTimeout(function () {
-            statusElement.animate({
-                opacity : "0.0"
-            }, 1000);
-        }, 2500);
-    }
-}
-
-function validateSettings(settings) {
+function validateAndAutoCorrectSettings(settings) {
     var isValid = true;
-    settings.doLineWrap = isTrue(settings.doLineWrap);
 
     // Validate font family
     if (!hasValue(settings.fontFamily)) {
@@ -68,11 +57,6 @@ function validateSettings(settings) {
         // Apply the default
         settings.fontSize = 13;
     }
-    
-    // Set admin mode
-    if (isTrue(settings.debugMode)) {
-        settings.adminMode = true;
-    }
 
     // Return results
     return {
@@ -81,32 +65,26 @@ function validateSettings(settings) {
     };
 }
 
-function getSettings() {
+function getOrCreateSettings() {
     var settingsString = localStorage["btvSettings"];
-
-    var settings;
-    if (settingsString == null || settingsString == '' || settingsString == 'undefined') {
-        settings = getDefaultSettings();
-        setSettings(settings);
-    } else {
-        settings = JSON.parse(settingsString);
-    }
-
-    return settings;
+    if (settingsString == null || settingsString == undefined || settingsString == '' || settingsString == 'undefined') {
+        return saveSettings(defaultSettings());
+    } 
+    return JSON.parse(settingsString);
 }
 
-function getDefaultSettings() {
+function defaultSettings() {
     return {
         doLineWrap: false,
         fontFamily: 'monospace',
         fontSize: 14,
-        adminMode: false,
         debugMode: false,
     };
 }
 
-function setSettings(settings) {
+function saveSettings(settings) {
     localStorage["btvSettings"] = JSON.stringify(settings);
+    return settings;
 }
 
 function isTrue(value) {
