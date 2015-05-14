@@ -13,17 +13,25 @@ function resetSettings() {
 // Restores select box state to saved value from localStorage.
 function updatePageFromSettings() {
     var settings = getSettings();
-    document.getElementById('inputDoLineWrap').checked = settings.doLineWrap;
-    document.getElementById('inputFontFamily').value = settings.fontFamily;
-    document.getElementById('inputFontSize').value = settings.fontSize;
+    $('#inputDoLineWrap').attr('checked', settings.doLineWrap);
+    $('#inputFontFamily').val(settings.fontFamily);
+    $('#inputFontSize').val(settings.fontSize);
+    $('#inputDebugMode').attr('checked', settings.debugMode);
+    $('#settingsJson').html(JSON.stringify(settings, null, 2));
+    
+    if (settings.adminMode) {
+        $('.adminSetting').show();
+    }
 }
 
 // Saves options to localStorage.
 function updateSettingsFromPage() {
-    var settings = new Object();
-    settings.doLineWrap = document.getElementById('inputDoLineWrap').checked;
-    settings.fontFamily = document.getElementById('inputFontFamily').value;
-    settings.fontSize = document.getElementById('inputFontSize').value;
+    var settings = {
+        doLineWrap: $('#inputDoLineWrap').attr('checked'),
+        fontFamily: $('#inputFontFamily').val(),
+        fontSize: $('#inputFontSize').val(),
+        debugMode: $('#inputDebugMode').attr('checked')
+    };
 
     var validation = validateSettings(settings);
     if (validation.isValid) {
@@ -60,6 +68,11 @@ function validateSettings(settings) {
         // Apply the default
         settings.fontSize = 13;
     }
+    
+    // Set admin mode
+    if (isTrue(settings.debugMode)) {
+        settings.adminMode = true;
+    }
 
     // Return results
     return {
@@ -83,11 +96,13 @@ function getSettings() {
 }
 
 function getDefaultSettings() {
-    var settings = new Object();
-    settings.doLineWrap = false;
-    settings.fontFamily = 'monospace';
-    settings.fontSize = 13;
-    return settings;
+    return {
+        doLineWrap: false,
+        fontFamily: 'monospace',
+        fontSize: 14,
+        adminMode: false,
+        debugMode: false,
+    };
 }
 
 function setSettings(settings) {

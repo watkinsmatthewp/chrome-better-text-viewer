@@ -5,31 +5,46 @@
 		<script type="application/javascript" src="Settings.js"></script>
 	</head>
 	<body>
-		<h3>Better Text Viewer Options</h3>
+		<h3>Better Text Viewer</h3>
 		<div id="content" style="padding: 1em;">
 			<div id="status">
 				Your settings have been saved successfully
 			</div>
-			<table style="width: 100%;">
+			<table class="table">
 				<tr>
-					<td style="padding-bottom: 1em;">Line-wrapping</td>
-					<td style="text-align: right;">
+					<td class="settingCell">Line-wrapping</td>
+					<td class="settingCell">
 						<input type="checkbox" id="inputDoLineWrap" name="inputDoLineWrap">
 					</td>
 				</tr>
 				<tr>
-					<td style="padding-bottom: 1em;">Font family</td>
-					<td style="text-align: right;">
-						<input type="text" id="inputFontFamily"></input>
+					<td class="settingCell">Font family</td>
+					<td class="settingCell">
+						<input type="text" id="inputFontFamily" name="inputFontFamily"></input>
 					</td>
 				</tr>
 				<tr>
-					<td style="padding-bottom: 1em;">Font size</td>
-					<td style="text-align: right;">
-						<input type="text" id="inputFontSize"></input>
+					<td class="settingCell">Font size</td>
+					<td class="settingCell">
+						<input type="text" id="inputFontSize" name="inputFontSize"></input>
+					</td>
+				</tr>
+				
+				<!-- The first time any admin setting value is set (via inspect element), the user enters admin mode and these rows become visible -->
+				<tr class="adminSetting">
+					<td class="settingCell" style="padding-top: 1em; border-top: 1px solid black;">Debug Mode</td>
+					<td class="settingCell" style="padding-top: 1em; border-top: 1px solid black;">
+						<input type="checkbox" id="inputDebugMode" name="inputDebugMode">
+					</td>
+				</tr>
+				<tr class="adminSetting">
+					<td class="settingCell">Settings JSON</td>
+					<td class="settingCell">
+						<pre id="settingsJson" name="settingsJson" class="codeBlock"></pre>
 					</td>
 				</tr>
 			</table>
+			
 			<div style="height: 2em;"></div>
 			<div style="float:right;">
 				<button id="reset">Reset</button>

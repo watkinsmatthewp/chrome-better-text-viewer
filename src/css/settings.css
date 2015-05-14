@@ -25,6 +25,24 @@ p {
   line-height: 1.8em;
 }
 
+.table {
+  width: 100%;
+}
+
+.settingCell {
+  padding-bottom: 1em;
+  vertical-align: top;
+}
+
+.adminSetting {
+  display: none;
+}
+
+pre.codeBlock {
+  word-wrap: break-word; 
+  white-space: pre-wrap;
+}
+
 #status 
 {
 	padding: 1em;
