@@ -3,7 +3,7 @@
 /*
  * Tell background.js to start listening for headers
  */
- chrome.extension.sendRequest({
+chrome.extension.sendRequest({
     msg: 'startListening'
 });
 
@@ -47,15 +47,13 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
  */
 function getPrettyPrintableElement(bodyElement) {
 	if (bodyElement == null) {
-		return document;
+        return document;
 	} else {
-        var children = bodyElement.contents();
+        var children = bodyElement.children();
         if (children.length == 0) {
             return bodyElement;
         } else if (children[0].nodeName == 'PRE') {
             return children[0];
-        } else if (children[0].nodeName == '#text' && children[0].nodeValue.trim().length > 0) {
-            return bodyElement;
         }
         
         return null;
@@ -129,18 +127,17 @@ function applyEditor(containerElement, codeMode, content) {
     chrome.extension.sendRequest({
         msg : "getSettings"
     }, function (settings) {
-        // var editor = CodeMirror(document.body, {value: content});
         var editor = CodeMirror(function (codeEditorElement) {
-                containerElement.html(codeEditorElement)
-            }, {
-                value : content,
-                readOnly: true,
-                lineNumbers : true,
-                fullScreen : true,
-                lineWrapping : settings.doLineWrap,
-                mode : codeMode,
-                useCPP : (codeMode == "clike")
-            });
+            containerElement.html(codeEditorElement)
+        }, {
+            value : content,
+            readOnly: true,
+            lineNumbers : true,
+            fullScreen : true,
+            lineWrapping : settings.doLineWrap,
+            mode : codeMode,
+            useCPP : (codeMode == "clike")
+        });
         applyStyleFromSettings(settings);
     });
 }
