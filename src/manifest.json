@@ -4,7 +4,7 @@
     },
     "browser_action" : {
         "default_icon" : "images/logo_16.png",
-        "default_popup" : "settings.html",
+        "default_popup" : "settingspage.html",
         "default_title" : "Better Text Viewer"
     },
     "content_scripts" : [{
@@ -22,7 +22,7 @@
     },
     "manifest_version" : 2,
     "name" : "Better Text Viewer",
-    "options_page" : "settings.html",
+    "options_page" : "settingspage.html",
     "version" : "2.0.1",
 	"permissions": [ "http://*/*", "https://*/*", "tabs", "webRequest" ],
     "web_accessible_resources" : ["images/logo_16.png", "images/logo_48.png", "images/logo_128.png"]
