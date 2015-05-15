@@ -13,7 +13,7 @@ chrome.extension.sendRequest({
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
     var contentType = null;
 	if (request.msg === 'headersReceived' && request.headers != null && request.headers.responseHeaders.length > 0) {
-		for (var i = 0; i < request.headers.responseHeaders.length; i++) {
+        for (var i = 0; i < request.headers.responseHeaders.length; i++) {
 			var header = request.headers.responseHeaders[i];
 			if (header.name == 'Content-Type') {
 				contentType = header.value.substring(0, header.value.indexOf(';'));
@@ -164,8 +164,7 @@ function applyStyleFromSettings(settings) {
 }
 
 function addRatingFloater(settings) {
-    var now = new Date();
-    if (now < settings.nextRatingPromptDate) {
+    if (new Date() > settings.nextRatingPromptDate) {
         // Build the ratings box
         $('<div id="ratingsBox">'
             + '<h4 id="ratingsBoxHeader">Do you l<span id="heart">♥</span>ve Better Text Viewer?</h4>'

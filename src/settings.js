@@ -14,7 +14,7 @@ function validateAndAutoCorrectSettings(settings) {
         }
     } else {
         // Apply the default
-        settings.fontSize = 13;
+        settings.fontSize = 14;
     }
 
     // Return results
@@ -28,22 +28,27 @@ function setNextRatingPromptDate(daysInTheFuture) {
   var settings = getOrCreateSettings();
   if (daysInTheFuture < 0) {
     // Set to an impossibly future date
-    settings.nextRatingPromptDate = new Date(3000, 1, 1);
+    settings.nextRatingPromptDate = new Date(3000, 1, 1).getTime();
   }
   else {
-    var date = new Date();
-    date = addDays(date, daysInTheFuture);
-    settings.nextRatingPromptDate = date;
+    settings.nextRatingPromptDate = addDays(new Date(), daysInTheFuture).getTime();
   }
   saveSettings(settings);
 }
 
 function getOrCreateSettings() {
     var settingsString = localStorage["btvSettings"];
+    var settings;
     if (settingsString == null || settingsString == undefined || settingsString == '' || settingsString == 'undefined') {
-        return saveSettings(defaultSettings());
-    } 
-    return JSON.parse(settingsString);
+        settings = saveSettings(defaultSettings());
+    } else {
+        settings = JSON.parse(settingsString);
+        if (settings.nextRatingPromptDate == null || settings.nextRatingPromptDate == undefined) {
+            settings.nextRatingPromptDate = addDays(new Date(), 3);
+            settings = saveSettings(settings);
+        }
+    }    
+    return settings;
 }
 
 function defaultSettings() {
@@ -52,6 +57,7 @@ function defaultSettings() {
         fontFamily: 'monospace',
         fontSize: 14,
         debugMode: false,
+        nextRatingPromptDate: addDays(new Date(), 3).getTime()
     };
 }
 

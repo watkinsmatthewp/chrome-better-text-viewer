@@ -10,19 +10,30 @@ $(window).load(function () {
     
     // Attach an event to the save button
     $('#save').click(function() {
-        var newSettings = {
-            doLineWrap: $('#inputDoLineWrap').prop('checked'),
-            fontFamily: $('#inputFontFamily').val(),
-            fontSize: $('#inputFontSize').val(),
-            debugMode: $('#inputDebugMode').prop('checked')
-        };
+        var settings = getOrCreateSettings();
+        
+        // Set properties from UI
+        settings.doLineWrap = $('#inputDoLineWrap').prop('checked');
+        settings.fontFamily = $('#inputFontFamily').val();
+        settings.fontSize = $('#inputFontSize').val();
+        settings.debugMode = $('#inputDebugMode').prop('checked');
+        settings.nextRatingPromptDate = new Date($('#inputNextRatingPromptDate').val()).getTime();
     
-        var validation = validateAndAutoCorrectSettings(newSettings);
+        var validation = validateAndAutoCorrectSettings(settings);
         if (validation.isValid) {
             showSettings(saveSettings(validation.settings));
             showAlertMessage('Settings saved');
         } else {
             showAlertMessage('Please correct errors and hit save again', true);
+        }
+    });
+    
+    // Show debug shortcut
+    $(document).keydown(function (e) {
+        // Ctrl+F2
+        if (e.ctrlKey && e.keyCode == 113) {
+            // Show debug info
+            $('.debugSetting').show();
         }
     });
 });
@@ -46,6 +57,7 @@ function showSettings(settings) {
     $('#inputFontFamily').val(settings.fontFamily);
     $('#inputFontSize').val(settings.fontSize);
     $('#inputDebugMode').prop('checked', settings.debugMode);
+    $('#inputNextRatingPromptDate').val(new Date(settings.nextRatingPromptDate));
     $('#settingsJson').html(JSON.stringify(settings, null, 2));
     
     if (settings.debugMode) {
