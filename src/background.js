@@ -30,7 +30,7 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 			headers: _activeHeadersByTabID[sender.tab.id]
 		});
     } else if (request.msg === 'getSettings' ) {
-        response = getSettings();
+        response = getOrCreateSettings();
     } else if (request.msg === 'setNextRatingPromptDate') {
         setNextRatingPromptDate(request.days);
     }
@@ -44,50 +44,3 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 chrome.tabs.onRemoved.addListener(function(tabId) {
     delete _activeHeadersByTabID[tabId];
 });
-
-/*
- * Finds settings in local storage
- */
-function getSettings() {
-    var settingsString = localStorage["btvSettings"];
-
-    var settings;
-    if (settingsString == null || settingsString == '' || settingsString == 'undefined') {
-        settings = {
-            doLineWrap: false,
-            fontFamily: 'monospace',
-            fontSize: 0
-        };
-        setSettings(settings);
-    } else {
-        settings = JSON.parse(settingsString);
-    }
-
-    return settings;
-}
-
-function setNextRatingPromptDate(daysInTheFuture) {
-  var settings = getSettings();
-  if (daysInTheFuture < 0) {
-    // Set to an impossibly future date
-    settings.nextRatingPromptDate = new Date(3000, 1, 1);
-  }
-  else {
-    var date = new Date();
-    date = addDays(date, daysInTheFuture);
-    settings.nextRatingPromptDate = date;
-  }
-  setSettings(settings);
-}
-
-function addDays(dateObject, numDays) {
-  dateObject.setDate(dateObject.getDate() + numDays);
-  return dateObject;
-}
-
-/*
- * Sets settings in local storage
- */
-function setSettings(settings) {
-    localStorage["btvSettings"] = JSON.stringify(settings);
-}

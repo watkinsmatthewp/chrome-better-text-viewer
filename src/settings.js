@@ -24,6 +24,20 @@ function validateAndAutoCorrectSettings(settings) {
     };
 }
 
+function setNextRatingPromptDate(daysInTheFuture) {
+  var settings = getOrCreateSettings();
+  if (daysInTheFuture < 0) {
+    // Set to an impossibly future date
+    settings.nextRatingPromptDate = new Date(3000, 1, 1);
+  }
+  else {
+    var date = new Date();
+    date = addDays(date, daysInTheFuture);
+    settings.nextRatingPromptDate = date;
+  }
+  saveSettings(settings);
+}
+
 function getOrCreateSettings() {
     var settingsString = localStorage["btvSettings"];
     if (settingsString == null || settingsString == undefined || settingsString == '' || settingsString == 'undefined') {
@@ -44,6 +58,11 @@ function defaultSettings() {
 function saveSettings(settings) {
     localStorage["btvSettings"] = JSON.stringify(settings);
     return settings;
+}
+
+function addDays(dateObject, numDays) {
+  dateObject.setDate(dateObject.getDate() + numDays);
+  return dateObject;
 }
 
 function isTrue(value) {
