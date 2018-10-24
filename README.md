@@ -1,2 +1,13 @@
-# chrome-better-text-viewer
-Better Text Viewer is a lightweight extension that facilitates reading plain-text files in Chrome. Get the same view of your file that you would in Notepad++, Vim, or any other decent text editor, including:  Line numbering Line unwrapping Syntax highlighting  The extension automatically determines when you are viewing a plain-text file, and guesses the language base don the file extension-- no configuration necessary.  Support will be included for more languages in the future. All bug reports should be submitted via my website's contact page:  http://watkinsmatthewp.weebly.com/contact.html  Technical details  As mentioned before, Better Text Viewer is a very lightweight extension. After detecting that the current page is a plain-text file and matching the extension to a language mode, it wraps the text block in an in-browser editor instance using code from the amazing open-source CodeMirror? project.
+### What is is
+
+Better Text Viewer is a lightweight Chrome extension that facilitates reading plain-text files in Chrome. Get the same view of your file that you would in Notepad++, Vim, or any other decent text editor, including:
+
+- Line numbering
+- Line unwrapping
+- Syntax highlighting
+
+The extension automatically determines when you are viewing a plain-text file, and guesses the language based on the file extension-- no configuration necessary. 
+
+### How it works
+
+Better Text Viewer is open source and is powered by the [CodeMirror](https://codemirror.net/) editor.
