@@ -127,6 +127,11 @@ function applyEditor(containerElement, codeMode, content) {
     chrome.extension.sendRequest({
         msg : "getSettings"
     }, function (settings) {
+        if (settings.theme !== "default") {
+            var url = chrome.extension.getURL("libs/theme/" + settings.theme.split(" ")[0] + ".css");
+            $("<link>", { rel : "stylesheet", href : url }).appendTo("head");
+        }
+
         var editor = CodeMirror(function (codeEditorElement) {
             containerElement.html(codeEditorElement)
         }, {
@@ -136,7 +141,8 @@ function applyEditor(containerElement, codeMode, content) {
             fullScreen : true,
             lineWrapping : settings.doLineWrap,
             mode : codeMode,
-            useCPP : (codeMode == "clike")
+            useCPP : (codeMode == "clike"),
+            theme : settings.theme
         });
         applyStyleFromSettings(settings);
     });

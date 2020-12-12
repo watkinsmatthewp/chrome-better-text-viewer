@@ -16,6 +16,7 @@ $(window).load(function () {
         settings.doLineWrap = $('#inputDoLineWrap').prop('checked');
         settings.fontFamily = $('#inputFontFamily').val();
         settings.fontSize = $('#inputFontSize').val();
+        settings.theme = $('#inputTheme').val();
         settings.debugMode = $('#inputDebugMode').prop('checked');
         settings.nextRatingPromptDate = new Date($('#inputNextRatingPromptDate').val()).getTime();
     
@@ -53,9 +54,16 @@ function showAlertMessage(text, keepAlive, aliveTime) {
 
 // Restores select box state to saved value from localStorage.
 function showSettings(settings) {
+    if (!$('#inputTheme option').length) {
+        $('#inputTheme').append(
+            themes.map(theme => $('<option>').text(theme))
+        );
+    }
+
     $('#inputDoLineWrap').prop('checked', settings.doLineWrap);
     $('#inputFontFamily').val(settings.fontFamily);
     $('#inputFontSize').val(settings.fontSize);
+    $('#inputTheme').val(settings.theme);
     $('#inputDebugMode').prop('checked', settings.debugMode);
     $('#inputNextRatingPromptDate').val(new Date(settings.nextRatingPromptDate));
     $('#settingsJson').html(JSON.stringify(settings, null, 2));
