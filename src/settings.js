@@ -1,3 +1,12 @@
+var themes = [
+    'default',
+    '3024-day', '3024-night', 'ambiance', 'ambiance', 'base16-dark', 'base16-light', 'blackboard', 'cobalt',
+    'colorforth', 'eclipse', 'elegant', 'erlang-dark', 'lesser-dark', 'mbo', 'mdn-like', 'midnight', 'monokai',
+    'neat', 'neo', 'night', 'paraiso-dark', 'paraiso-light', 'pastel-on-dark', 'rubyblue', 'solarized dark',
+    'solarized light', 'solarized lightCodeMirror', 'the-matrix', 'tomorrow-night-bright',
+    'tomorrow-night-eighties', 'twilight', 'vibrant', 'vibrant-ink', 'xq-dark', 'xq-light', 'zenburn'
+];
+
 function validateAndAutoCorrectSettings(settings) {
     var isValid = true;
 
@@ -15,6 +24,11 @@ function validateAndAutoCorrectSettings(settings) {
     } else {
         // Apply the default
         settings.fontSize = 14;
+    }
+
+    // Validate theme
+    if (!hasValue(settings.theme)) {
+        settings.theme = 'default';
     }
 
     // Return results
@@ -43,8 +57,16 @@ function getOrCreateSettings() {
         settings = saveSettings(defaultSettings());
     } else {
         settings = JSON.parse(settingsString);
+        var needSave = false;
+        if (!settings.theme || !themes.includes(settings.theme)) {
+            settings.theme = 'default';
+            needSave = true;
+        }
         if (settings.nextRatingPromptDate == null || settings.nextRatingPromptDate == undefined) {
             settings.nextRatingPromptDate = addDays(new Date(), 3);
+            needSave = true;
+        }
+        if (needSave) {
             settings = saveSettings(settings);
         }
     }    
@@ -56,6 +78,7 @@ function defaultSettings() {
         doLineWrap: false,
         fontFamily: 'monospace',
         fontSize: 14,
+        theme: 'default',
         debugMode: false,
         nextRatingPromptDate: addDays(new Date(), 3).getTime()
     };
